@@ -1,36 +1,49 @@
 import type { LayoutDefinition, SlideElement } from '../types';
-import { SLIDE_W, body, displayNumber, heading, mix, rect, textOn } from './helpers';
+import { presetChrome, presetPattern } from './decor';
+import { SLIDE_W, displayNumber, hairline, heading, kicker, mix, sectionLabel, subtitle, textOn } from './helpers';
 
 export const centeredPremiumLayout: LayoutDefinition = {
   id: 'centered-premium',
   name: 'Centered Premium',
-  description: 'Symmetric composition with flanking hairline rules.',
+  description: 'Symmetric composition with an encircled numeral.',
   build: (ctx) => {
     const { inputs, preset } = ctx;
     const ink = textOn(inputs.background);
-    const num = displayNumber(inputs.sectionNumber);
+    const muted = mix(ink, inputs.background, 0.42);
     const cx = SLIDE_W / 2;
     const elements: SlideElement[] = [];
 
-    elements.push(rect({ x: cx - 2.1, y: 1.98, w: 1.1, h: 0.02 }, mix(ink, inputs.background, 0.55)));
-    elements.push(rect({ x: cx + 1.0, y: 1.98, w: 1.1, h: 0.02 }, mix(ink, inputs.background, 0.55)));
+    // Medallion: hairline circle holding the numeral, flanked by fine rules.
+    const ring = 0.92;
+    elements.push({
+      kind: 'ellipse',
+      frame: { x: cx - ring / 2, y: 1.32, w: ring, h: ring },
+      line: { color: mix(ink, inputs.background, 0.55), width: 1 },
+    });
     elements.push({
       kind: 'text',
-      frame: { x: cx - 0.9, y: 1.7, w: 1.8, h: 0.6 },
-      text: num,
+      frame: { x: cx - ring / 2, y: 1.32, w: ring, h: ring },
+      text: displayNumber(inputs.sectionNumber),
       fontFace: preset.fonts.heading,
-      size: 20,
+      size: 19,
       color: inputs.accent,
       bold: true,
-      charSpacing: 2,
+      charSpacing: 1.5,
       align: 'center',
       valign: 'middle',
+      italic: preset.decor.numberStyle === 'italic',
     });
+    elements.push(hairline(cx - 2.6, 1.78 - 0.008, 1.75, mix(ink, inputs.background, 0.68)));
+    elements.push(hairline(cx + 0.85, 1.78 - 0.008, 1.75, mix(ink, inputs.background, 0.68)));
 
-    elements.push(heading(ctx, { x: 1.6, y: 2.95, w: 10.13, h: 1.6 }, inputs.sectionTitle, { size: 46, color: ink, align: 'center' }));
-    elements.push(body(ctx, { x: 2.8, y: 4.65, w: 7.73, h: 0.9 }, inputs.subtitle, { size: 15, color: mix(ink, inputs.background, 0.35), align: 'center' }));
-    elements.push(rect({ x: cx - 0.35, y: 5.75, w: 0.7, h: 0.045 }, inputs.accent));
+    elements.push(kicker(ctx, { x: cx - 3, y: 2.55, w: 6, h: 0.32 }, sectionLabel(ctx), muted, 'center'));
+    elements.push(heading(ctx, { x: 1.5, y: 3.05, w: 10.33, h: 1.55 }, inputs.sectionTitle, { size: 46, color: ink, align: 'center' }));
+    elements.push(subtitle(ctx, { x: 3.1, y: 4.72, w: 7.13, h: 0.85 }, { size: 14, color: muted, align: 'center' }));
 
+    // Closing ornament in the preset's own pattern language.
+    elements.push(...presetPattern(ctx, { x: cx - 1.05, y: 5.85, w: 2.1, h: 0.2 }, mix(inputs.accent, inputs.background, 0.3)));
+
+    elements.push(...presetChrome(ctx, inputs.background));
     return elements;
   },
 };

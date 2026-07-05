@@ -35,6 +35,7 @@ function addElement(pptx: PptxGenJS, slide: PptxGenJS.Slide, el: SlideElement): 
         align: el.align ?? 'left',
         valign: el.valign ?? 'top',
         charSpacing: el.charSpacing,
+        outline: el.outline ? { color: hex(el.outline.color), size: el.outline.width } : undefined,
         lineSpacingMultiple: el.lineSpacing,
         rtlMode: el.rtl ?? false,
         margin: 0,

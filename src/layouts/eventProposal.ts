@@ -1,39 +1,34 @@
 import type { LayoutDefinition, SlideElement } from '../types';
-import { MARGIN, SLIDE_W, body, displayNumber, heading, kicker, mix, rect, textOn, tickRow } from './helpers';
+import { presetChrome, presetPattern } from './decor';
+import { MARGIN, SLIDE_W, ghostNumber, hairline, heading, kicker, mix, rect, sectionLabel, subtitle, textOn } from './helpers';
 
 export const eventProposalLayout: LayoutDefinition = {
   id: 'event-proposal',
   name: 'Event Proposal',
   description: 'Agency pitch style: kicker up top, statement title at the base.',
   build: (ctx) => {
-    const { inputs, preset } = ctx;
+    const { inputs } = ctx;
     const ink = textOn(inputs.background);
-    const num = displayNumber(inputs.sectionNumber);
+    const muted = mix(ink, inputs.background, 0.42);
     const elements: SlideElement[] = [];
 
-    elements.push(kicker(ctx, { x: MARGIN, y: 0.85, w: 5, h: 0.4 }, 'Event proposal', inputs.accent));
-    elements.push(rect({ x: MARGIN, y: 1.35, w: 2.2, h: 0.028 }, mix(ink, inputs.background, 0.6)));
-    elements.push({
-      kind: 'text',
-      frame: { x: SLIDE_W - MARGIN - 3, y: 0.55, w: 3, h: 1.3 },
-      text: num,
-      fontFace: preset.fonts.heading,
-      size: 60,
-      color: mix(inputs.primary, inputs.background, 0.5),
-      bold: true,
-      align: 'right',
-      valign: 'top',
-    });
+    // Masthead: label, long hairline, numeral hanging at the right edge.
+    elements.push(kicker(ctx, { x: MARGIN, y: 0.78, w: 5, h: 0.35 }, 'Event Proposal', inputs.accent));
+    elements.push(hairline(MARGIN, 1.28, SLIDE_W - MARGIN * 2 - 3.1, mix(ink, inputs.background, 0.68)));
+    elements.push(ghostNumber(ctx, { x: SLIDE_W - MARGIN - 2.9, y: 0.5, w: 2.9, h: 1.5 }, 68, inputs.background, { align: 'right', valign: 'top', strength: 0.5 }));
 
-    elements.push(...tickRow({ x: MARGIN, y: 3.1, w: 3.4, h: 0.3 }, mix(inputs.accent, inputs.background, 0.25), 18));
+    // Preset texture strip breathing between masthead and title.
+    elements.push(...presetPattern(ctx, { x: MARGIN, y: 3.0, w: 3.3, h: 0.34 }, mix(inputs.accent, inputs.background, 0.3)));
 
-    elements.push(rect({ x: MARGIN, y: 3.95, w: 0.55, h: 0.12 }, inputs.accent));
-    elements.push(heading(ctx, { x: MARGIN, y: 4.25, w: 10.4, h: 1.9 }, inputs.sectionTitle, { size: 52, color: ink }));
+    elements.push(rect({ x: MARGIN, y: 3.92, w: 0.5, h: 0.1 }, inputs.accent));
+    elements.push(heading(ctx, { x: MARGIN, y: 4.2, w: 10.6, h: 1.9 }, inputs.sectionTitle, { size: 54, color: ink }));
 
-    elements.push(rect({ x: MARGIN, y: 6.55, w: SLIDE_W - MARGIN * 2, h: 0.02 }, mix(ink, inputs.background, 0.65)));
-    elements.push(body(ctx, { x: MARGIN, y: 6.7, w: 8, h: 0.5 }, inputs.subtitle, { size: 12, color: mix(ink, inputs.background, 0.4) }));
-    elements.push(body(ctx, { x: SLIDE_W - MARGIN - 3, y: 6.7, w: 3, h: 0.5 }, `SECTION ${num}`, { size: 12, color: mix(ink, inputs.background, 0.4), align: 'right', charSpacing: 2, bold: true }));
+    // Colophon rule: subtitle left, section marker right.
+    elements.push(hairline(MARGIN, 6.5, SLIDE_W - MARGIN * 2, mix(ink, inputs.background, 0.68)));
+    elements.push(subtitle(ctx, { x: MARGIN, y: 6.66, w: 7.6, h: 0.5 }, { size: 11.5, color: muted }));
+    elements.push(kicker(ctx, { x: SLIDE_W - MARGIN - 3.5, y: 6.6, w: 3.5, h: 0.35 }, sectionLabel(ctx), muted, 'right'));
 
+    elements.push(...presetChrome(ctx, inputs.background));
     return elements;
   },
 };

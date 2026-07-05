@@ -1,37 +1,35 @@
 import type { LayoutDefinition, SlideElement } from '../types';
-import { body, displayNumber, heading, mix, rect, textOn } from './helpers';
+import { presetChrome } from './decor';
+import { hairline, heading, kicker, mix, rect, sectionLabel, subtitle, textOn } from './helpers';
 
 export const minimalLineLayout: LayoutDefinition = {
   id: 'minimal-line',
   name: 'Minimal Line',
   description: 'One hairline across the center; everything else is silence.',
   build: (ctx) => {
-    const { inputs, preset } = ctx;
+    const { inputs } = ctx;
     const ink = textOn(inputs.background);
-    const num = displayNumber(inputs.sectionNumber);
-    const lineY = 4.05;
-    const x = 1.3;
-    const w = 10.73;
+    const muted = mix(ink, inputs.background, 0.45);
+    const lineY = 4.1;
+    const x = 1.35;
+    const w = 10.63;
     const elements: SlideElement[] = [];
 
-    elements.push(rect({ x, y: lineY, w, h: 0.022 }, mix(ink, inputs.background, 0.65)));
-    elements.push(rect({ x, y: lineY, w: 1.6, h: 0.022 }, inputs.accent));
-
-    elements.push(heading(ctx, { x, y: 2.35, w, h: 1.5 }, inputs.sectionTitle, { size: 42, color: ink, valign: 'bottom' }));
+    elements.push(hairline(x, lineY, w, mix(ink, inputs.background, 0.68)));
+    elements.push(rect({ x, y: lineY - 0.008, w: 1.5, h: 0.034 }, inputs.accent));
+    // A lone terminal dot closes the rule, like a full stop.
     elements.push({
-      kind: 'text',
-      frame: { x, y: lineY + 0.25, w: 2, h: 0.5 },
-      text: num,
-      fontFace: preset.fonts.heading,
-      size: 16,
-      color: inputs.accent,
-      bold: true,
-      charSpacing: 2,
-      align: 'left',
-      valign: 'top',
+      kind: 'ellipse',
+      frame: { x: x + w - 0.05, y: lineY - 0.026, w: 0.068, h: 0.068 },
+      fill: inputs.accent,
     });
-    elements.push(body(ctx, { x: x + w - 7, y: lineY + 0.25, w: 7, h: 0.8 }, inputs.subtitle, { size: 13, color: mix(ink, inputs.background, 0.4), align: 'right' }));
 
+    elements.push(kicker(ctx, { x, y: 1.85, w, h: 0.32 }, sectionLabel(ctx), muted));
+    elements.push(heading(ctx, { x, y: 2.25, w, h: 1.6 }, inputs.sectionTitle, { size: 44, color: ink, valign: 'bottom' }));
+
+    elements.push(subtitle(ctx, { x: x + w - 6.8, y: lineY + 0.3, w: 6.8, h: 0.8 }, { size: 13, color: muted, align: 'right' }));
+
+    elements.push(...presetChrome(ctx, inputs.background));
     return elements;
   },
 };

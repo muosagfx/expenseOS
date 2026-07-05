@@ -77,6 +77,7 @@ export function SlidePreview({ elements, background }: SlidePreviewProps) {
                 fontWeight: el.bold ? 700 : 400,
                 fontStyle: el.italic ? 'italic' : undefined,
                 letterSpacing: el.charSpacing ? pt(el.charSpacing) : undefined,
+                WebkitTextStroke: el.outline ? `${pt(el.outline.width)}px ${el.outline.color}` : undefined,
                 lineHeight: el.lineSpacing ?? 1.15,
                 whiteSpace: 'pre-wrap',
                 overflow: 'hidden',

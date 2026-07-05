@@ -1,33 +1,29 @@
 import type { LayoutDefinition, SlideElement } from '../types';
-import { MARGIN, body, displayNumber, heading, kicker, mix, rect, textOn } from './helpers';
+import { presetChrome } from './decor';
+import { MARGIN, ghostNumber, heading, kicker, mix, rect, sectionLabel, subtitle, textOn } from './helpers';
 
 export const bigNumberLayout: LayoutDefinition = {
   id: 'big-number',
   name: 'Big Number',
   description: 'Oversized ghost numeral anchoring the right side.',
   build: (ctx) => {
-    const { inputs, preset } = ctx;
+    const { inputs } = ctx;
     const ink = textOn(inputs.background);
-    const num = displayNumber(inputs.sectionNumber);
+    const muted = mix(ink, inputs.background, 0.42);
     const elements: SlideElement[] = [];
 
-    elements.push({
-      kind: 'text',
-      frame: { x: 5.6, y: 0.3, w: 7.4, h: 6.9 },
-      text: num,
-      fontFace: preset.fonts.heading,
-      size: 330,
-      color: mix(inputs.primary, inputs.background, 0.78),
-      bold: true,
-      align: 'right',
-      valign: 'middle',
-    });
+    elements.push(ghostNumber(ctx, { x: 6.1, y: 0.55, w: 6.75, h: 6.4 }, 315, inputs.background));
 
-    elements.push(kicker(ctx, { x: MARGIN, y: 1.0, w: 4, h: 0.4 }, `Section ${num}`, inputs.accent));
-    elements.push(rect({ x: MARGIN, y: 4.45, w: 0.9, h: 0.07 }, inputs.accent));
-    elements.push(heading(ctx, { x: MARGIN, y: 4.7, w: 8.6, h: 1.5 }, inputs.sectionTitle, { size: 44, color: ink }));
-    elements.push(body(ctx, { x: MARGIN, y: 6.05, w: 7.8, h: 0.9 }, inputs.subtitle, { size: 15, color: mix(ink, inputs.background, 0.35) }));
+    // Top-left identity: accent chip + tracked kicker on one baseline.
+    elements.push(rect({ x: MARGIN, y: 0.94, w: 0.15, h: 0.15 }, inputs.accent));
+    elements.push(kicker(ctx, { x: MARGIN + 0.3, y: 0.82, w: 4.5, h: 0.4 }, sectionLabel(ctx), muted));
 
+    // Title block sits on the lower third, ranged left.
+    elements.push(rect({ x: MARGIN, y: 4.28, w: 0.85, h: 0.055 }, inputs.accent));
+    elements.push(heading(ctx, { x: MARGIN, y: 4.52, w: 8.4, h: 1.5 }, inputs.sectionTitle, { size: 47, color: ink }));
+    elements.push(subtitle(ctx, { x: MARGIN, y: 5.98, w: 6.6, h: 0.85 }, { size: 14, color: muted }));
+
+    elements.push(...presetChrome(ctx, inputs.background));
     return elements;
   },
 };

@@ -44,6 +44,8 @@ export interface TextElement {
   lineSpacing?: number;
   /** Right-to-left text (used by the Arabic/bilingual layout). */
   rtl?: boolean;
+  /** Text stroke, used for outlined ghost numerals. Width in points. */
+  outline?: { color: string; width: number };
 }
 
 export type SlideElement = RectElement | EllipseElement | TextElement;
@@ -54,6 +56,15 @@ export type PresetId =
   | 'futuristic-tech'
   | 'editorial-luxury'
   | 'dark-cinematic';
+
+/** Placeholder texture language, one per preset. */
+export type PatternKind = 'dots' | 'diamonds' | 'crosses' | 'vlines' | 'scanlines';
+
+/** Slide-level decorative frame applied on top of every layout. */
+export type ChromeKind = 'cropmarks' | 'diamond-rule' | 'hud' | 'frame' | 'letterbox';
+
+/** Treatment for large display numerals. */
+export type NumberStyle = 'solid' | 'outline' | 'italic';
 
 export interface StylePreset {
   id: PresetId;
@@ -73,6 +84,21 @@ export interface StylePreset {
     uppercase: boolean;
     bold: boolean;
     charSpacing: number;
+    /** Multiplier applied to layout title sizes (serifs run larger, wide sans smaller). */
+    sizeScale: number;
+  };
+  /** Editorial Luxury sets subtitles in italic; others stay roman. */
+  subtitleItalic: boolean;
+  labels: {
+    /** Word used before the number in kickers: Section / Sector / Chapter / Act. */
+    section: string;
+    /** Prefix for standalone display numbers, e.g. "No. " in Editorial Luxury. */
+    numberPrefix: string;
+  };
+  decor: {
+    pattern: PatternKind;
+    chrome: ChromeKind;
+    numberStyle: NumberStyle;
   };
 }
 

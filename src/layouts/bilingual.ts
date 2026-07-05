@@ -1,5 +1,6 @@
 import type { LayoutDefinition, SlideElement } from '../types';
-import { SLIDE_W, body, displayNumber, heading, mix, rect, textOn } from './helpers';
+import { presetChrome } from './decor';
+import { SLIDE_W, hairline, heading, kicker, mix, numberText, rect, sectionLabel, subtitle, textOn } from './helpers';
 
 export const bilingualLayout: LayoutDefinition = {
   id: 'bilingual',
@@ -8,38 +9,44 @@ export const bilingualLayout: LayoutDefinition = {
   build: (ctx) => {
     const { inputs, preset } = ctx;
     const ink = textOn(inputs.background);
-    const muted = mix(ink, inputs.background, 0.38);
-    const num = displayNumber(inputs.sectionNumber);
+    const muted = mix(ink, inputs.background, 0.4);
     const cx = SLIDE_W / 2;
-    const colW = 5.1;
+    const colW = 4.9;
+    const gap = 0.75;
     const elements: SlideElement[] = [];
 
+    // Header: display number flanked by small accent diamonds.
     elements.push({
       kind: 'text',
-      frame: { x: cx - 1, y: 0.95, w: 2, h: 0.6 },
-      text: num,
+      frame: { x: cx - 1.5, y: 0.95, w: 3, h: 0.55 },
+      text: numberText(ctx),
       fontFace: preset.fonts.heading,
-      size: 20,
+      size: 19,
       color: inputs.accent,
-      bold: true,
-      charSpacing: 2,
+      bold: preset.heading.bold,
+      italic: preset.decor.numberStyle === 'italic',
+      charSpacing: 1.5,
       align: 'center',
       valign: 'middle',
     });
-    elements.push(rect({ x: cx - 0.011, y: 2.1, w: 0.022, h: 3.6 }, mix(ink, inputs.background, 0.6)));
+    elements.push(rect({ x: cx - 1.85, y: 1.17, w: 0.075, h: 0.075 }, inputs.accent, 45));
+    elements.push(rect({ x: cx + 1.78, y: 1.17, w: 0.075, h: 0.075 }, inputs.accent, 45));
 
-    // English column (left, ragged right toward the divider)
-    elements.push(heading(ctx, { x: cx - colW - 0.6, y: 2.5, w: colW, h: 1.7 }, inputs.sectionTitle, { size: 34, color: ink, align: 'right' }));
-    elements.push(body(ctx, { x: cx - colW - 0.6, y: 4.35, w: colW, h: 1 }, inputs.subtitle, { size: 13, color: muted, align: 'right' }));
-    elements.push(rect({ x: cx - 1.3, y: 5.5, w: 0.7, h: 0.045 }, inputs.accent));
+    // Center spine with a short accent segment at title height.
+    elements.push(rect({ x: cx - 0.01, y: 2.0, w: 0.02, h: 3.9 }, mix(ink, inputs.background, 0.65)));
+    elements.push(rect({ x: cx - 0.025, y: 2.55, w: 0.05, h: 1.15 }, inputs.accent));
 
-    // Arabic column (right, RTL)
+    // English column, ranged toward the spine.
+    elements.push(heading(ctx, { x: cx - colW - gap, y: 2.55, w: colW, h: 1.7 }, inputs.sectionTitle, { size: 33, color: ink, align: 'right' }));
+    elements.push(subtitle(ctx, { x: cx - colW - gap, y: 4.45, w: colW, h: 1 }, { size: 13, color: muted, align: 'right' }));
+
+    // Arabic column, mirrored (RTL).
     elements.push({
       kind: 'text',
-      frame: { x: cx + 0.6, y: 2.5, w: colW, h: 1.7 },
+      frame: { x: cx + gap, y: 2.55, w: colW, h: 1.7 },
       text: inputs.arabicTitle,
       fontFace: preset.fonts.arabic,
-      size: 34,
+      size: 33,
       color: ink,
       bold: true,
       align: 'left',
@@ -49,7 +56,7 @@ export const bilingualLayout: LayoutDefinition = {
     });
     elements.push({
       kind: 'text',
-      frame: { x: cx + 0.6, y: 4.35, w: colW, h: 1 },
+      frame: { x: cx + gap, y: 4.45, w: colW, h: 1 },
       text: inputs.arabicSubtitle,
       fontFace: preset.fonts.arabic,
       size: 14,
@@ -57,10 +64,15 @@ export const bilingualLayout: LayoutDefinition = {
       align: 'left',
       valign: 'top',
       rtl: true,
-      lineSpacing: 1.3,
+      lineSpacing: 1.35,
     });
-    elements.push(rect({ x: cx + 0.6, y: 5.5, w: 0.7, h: 0.045 }, inputs.accent));
 
+    // Shared footer label and mirrored accent ticks.
+    elements.push(hairline(cx - 1.75, 5.75, 0.55, inputs.accent, 0.04));
+    elements.push(hairline(cx + 1.2, 5.75, 0.55, inputs.accent, 0.04));
+    elements.push(kicker(ctx, { x: cx - 3, y: 6.15, w: 6, h: 0.32 }, sectionLabel(ctx), mix(ink, inputs.background, 0.55), 'center'));
+
+    elements.push(...presetChrome(ctx, inputs.background));
     return elements;
   },
 };

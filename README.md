@@ -26,7 +26,8 @@ src/
   types.ts                 # Shared model: inputs, presets, slide elements, layouts
   presets/stylePresets.ts  # The 5 style presets (fonts, default palette, heading rules)
   layouts/
-    helpers.ts             # Canvas constants, color math, text/pattern builders
+    helpers.ts             # Canvas constants, color math, typography + numeral builders
+    decor.ts               # Per-preset pattern languages and slide chrome (crop marks, HUD, frame, letterbox...)
     index.ts               # Layout registry
     bigNumber.ts           # 1.  Big number
     leftEditorial.ts       # 2.  Left editorial
